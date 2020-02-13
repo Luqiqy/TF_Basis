@@ -8,15 +8,15 @@ t2 = tf.constant([[1],
                   [2]], tf.float32)            # 与t1行数相同则按列计算
 session = tf.Session()
 # 计算两个二维张量相加
-result_add = tf.add(t1, t2)
+result_add = tf.add(t1, t2)                    # 等价于result_add = t1+t2
 # 计算两个二维向量相减
-result_subtract = tf.subtract(t1, t2)
+result_subtract = tf.subtract(t1, t2)          # 等价于result_subtract = t1-t2
 # 计算两个二维向量相乘
-result_multiply = tf.multiply(t1, t2)
+result_multiply = tf.multiply(t1, t2)          # 等价于result_multiply = t1*t2
 # 计算一个标量与一个张量相乘
-result_scalar_mul = tf.scalar_mul(2, t1)
+result_scalar_mul = tf.scalar_mul(2, t1)       # 等价于result_scalar_mul = 2*t1
 # 计算两个二维张量相除
-result_div = tf.div(t1, t2)
+result_div = tf.div(t1, t2)                    # 等价于result_div = t1/t2
 # 打印结果
 print("二维张量t1：\n", session.run(t1))
 print("二维张量t2：\n", session.run(t2))
