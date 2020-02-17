@@ -57,3 +57,115 @@ plt.show()
 
 #### 1.2 保存和加载回归模型
 
+##### 1.2.1 保存模型
+
+Tensorflow保存模型可以理解为用文件保存程序中的**Variable**对象。
+
+* 定义两个**Variable**，并初始化为不同的值，然后声明一个`tf.train.Saver`类的对象，调用该类中的方法***save***，将这两个**Variable**对象保存到model.ckpt的文件中。
+
+```python
+import tensorflow.compat.v1 as tf
+# 第一个variable，初始化为一个长度为3的一维张量
+v1 = tf.Variable(tf.constant([1, 2, 3], tf.float32), dtype=tf.float32, name='v1')
+# 第一个variable，初始化为一个长度为2的一维张量
+v2 = tf.Variable(tf.constant([4, 5], tf.float32), dtype=tf.float32, name='v2')
+# 声明一个tf.train.Saver对象
+saver = tf.train.Saver()
+# 创建会话，初始化变量
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
+# 将变量v1和v2保存到./L2/model.ckpt路径下
+save_path = saver.save(sess, './L2model/model.ckpt')
+sess.close()
+```
+
+* 使用常用的字典类管理**Variable**对象，保存模型。
+
+```python
+import tensorflow.compat.v1 as tf
+# 用字典管理变量
+weights = {
+    'w1': tf.Variable([11, 12, 13], dtype=tf.float32, name='w1'),
+    'w2': tf.Variable([21, 22], dtype=tf.float32, name='w2')
+    }
+bias = {
+    'b1': tf.Variable([101, 102], dtype=tf.float32, name='b1'),
+    'b2': tf.Variable(2, dtype=tf.float32, name='b2')
+    }
+
+# 创建会话
+sess = tf.Session()
+# 声明一个tf.train.Saver类
+saver = tf.train.Saver()
+with tf.Session() as sess:
+    # 变量初始化
+    sess.run(tf.global_variables_initializer())
+    # 将变量存在./L2modelMul/modelMul.ckpt
+    saver.save(sess, './L2modelMul/modelMul.ckpt')
+```
+
+##### 1.2.2 加载模型
+
+* 声明一个`tf.train.Saver`类的对象，调用该类中的方法***restore***，读取model.ckpt文件中变量的值。
+
+  ```python
+  import tensorflow.compat.v1 as tf
+  # 初始化两个变量，变量形状要与model.ckpt中相同
+  v1 = tf.Variable([11, 12, 13], dtype=tf.float32, name='v1')
+  v2 = tf.Variable([15, 16], dtype=tf.float32, name='v2')
+  # 声明一个tf.train.Sever类
+  saver = tf.train.Saver()
+  with tf.Session() as sess:
+      # 加载./L2/model.ckpt下文件
+      saver.restore(sess, './L2model/model.ckpt')
+      # 打印两个变量的值
+      print(sess.run(v1))
+      print(sess.run(v2))
+  sess.close()
+  ```
+
+  > 弊端：使用此种方法要知道要读取的变量的名称及其形状。
+
+* 直接获取文件中的变量的名称及其对应的值。
+
+  ```python
+  import tensorflow.compat.v1 as tf
+  from tensorflow.python import pywrap_tensorflow
+  # 获取在'./L2model/'文件夹下的ckpt文件，并打印获取的文件
+  ckpt = tf.train.latest_checkpoint('./L2model/')
+  print('获取的ckpt文件：'+ckpt)
+  # 创建NewCheckpointReader类，读取ckpt文件中的变量名称及其对应的值
+  reader = pywrap_tensorflow.NewCheckpointReader(ckpt)
+  var_to_shape_map = reader.get_variable_to_shape_map()
+  for key in var_to_shape_map:
+      print("tensor_name:", key)
+      print(reader.get_tensor(key))
+  ```
+
+* 使用常用的字典类管理**Variable**对象，加载模型。
+
+  ```python
+  import tensorflow.compat.v1 as tf
+  # 用字典类管理变量
+  weights = {
+      'w1': tf.Variable([1, 13, 22], dtype=tf.float32, name='w1'),
+      'w2': tf.Variable([31, 32], dtype=tf.float32, name='w2')
+      }
+  bias = {
+      'b1': tf.Variable([2, 12], dtype=tf.float32, name='b1'),
+      'b2': tf.Variable(23, dtype=tf.float32, name='b2')
+      }
+  # 声明一个tf.train.Saver类
+  saver = tf.train.Saver()
+  with tf.Session() as sess:
+      # 加载modelMul.ckpt文件
+      saver.restore(sess, './L2modelMul/modelMul.ckpt')
+      # 打印结果
+      print(sess.run(weights['w1']))
+      print(sess.run(weights['w2']))
+      print(sess.run(bias['b1']))
+      print(sess.run(bias['b2']))
+  sess.close()
+  ```
+
+  
