@@ -9,5 +9,5 @@ saver = tf.train.Saver()
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 # 将变量v1和v2保存到./L2/model.ckpt路径下
-save_path = saver.save(sess, './L2/model.ckpt')
+save_path = saver.save(sess, './L2model/model.ckpt')
 sess.close()
