@@ -274,3 +274,56 @@ print("在坐标(6, 7)和(8, 10)处的值：\n", pred)
 非线性回归与线性回归类似，只是根据已知点拟合一曲线或曲面，使得点到曲线或曲面的距离的平方和最小。
 
 ***例：*** 已知***xyz***三维空间上有6个点(1, 1, 8), (2, 1, 12), (3, 2, 10), (1, 2, 14), (4, 5, 28), (5, 8, 10)，寻找一个曲面***z=( w1•x+w2•y)^2^***, 使得这些点到该曲面的距离的平方和最小。
+
+#### 2.1 单变量形式
+
+```python
+import tensorflow as tf
+import numpy as np
+# 输入已知数据
+x = tf.placeholder(tf.float32, [None])
+y = tf.placeholder(tf.float32, [None])
+z = tf.placeholder(tf.float32, [None])
+# 初始化变量
+w1 = tf.Variable(initial_value=2.0, dtype=tf.float32, name='w1')
+w2 = tf.Variable(initial_value=2.0, dtype=tf.float32, name='w2')
+# 构造损失函数
+loss = tf.reduce_sum(tf.square(z-tf.pow((w1*x+w2*y), 2.0)))
+# 选用梯度下降法求解变量
+opti = tf.train.GradientDescentOptimizer(0.005).minimize(loss)
+# 训练数据
+x_train = np.array([1, 2, 3, 1, 4, 5], np.float32)
+y_train = np.array([1, 1, 2, 2, 5, 8], np.float32)
+z_train = np.array([8, 12, 10, 14, 28, 10], np.float32)
+# 创建会话训练模型
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
+for i in range(500):
+    sess.run(opti, feed_dict={x: x_train, y: y_train, z: z_train})
+```
+
+#### 2.2 矩阵形式
+
+```python
+import tensorflow.compat.v1 as tf
+import numpy as np
+# 输入已知数据，用来训练，等号右为一矩阵，左为一矩阵
+xy = tf.placeholder(tf.float32, [None, 2])
+z = tf.placeholder(tf.float32, [None, 1])
+# 初始化变量，矩阵形式
+w = tf.Variable(tf.constant([[1], [1]], tf.float32), dtype=tf.float32, name='w')
+# 构造损失函数
+loss = tf.reduce_sum(tf.square(z-tf.matmul(xy, w)))
+# 使用梯度下降法求解变量
+opti = tf.train.GradientDescentOptimizer(0.005).minimize(loss)
+# 待训练的数据，等号右为一矩阵，左为一矩阵
+xy_train = np.array([[1, 1], [2, 1], [3, 2],
+                     [1, 2], [4, 5], [5, 8]], np.float32)
+z_train=np.array([[8], [12], [10], [14], [28], [10]], np.float32)
+# 创建会话，训练模型
+session = tf.Session()
+session.run(tf.global_variables_initializer())
+for i in range(500):
+    session.run(opti, feed_dict={xy: xy_train, z: z_train})
+```
+
