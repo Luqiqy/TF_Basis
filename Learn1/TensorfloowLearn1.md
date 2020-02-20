@@ -183,7 +183,11 @@ print(image_ndarray)
 
 均匀分布的概率密度函数：
 $$
-
+p(X=x)=\left\{\begin{matrix}
+\frac{1}{b-a},\:\:a\leqslant x< b
+\\ 
+0,\:\:\:\:\:\:\:\:\:其他
+\end{matrix}\right.
 $$
 
 ```python
@@ -210,7 +214,7 @@ plt.show()
 
 一维正态分布的概率密度函数：
 $$
-
+P(X=x)=\frac{1}{\sqrt{2\pi }\sigma }e\tfrac{-(x-\mu )^{2}}{2\sigma ^{2}}
 $$
 
 ```python
